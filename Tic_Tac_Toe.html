@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+    }
+
+    .game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+    }
+
+    .cell {
+      background-color: white;
+      border: 2px solid #333;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cell:hover {
+      background-color: #f9f9f9;
+    }
+
+    .message {
+      margin: 20px 0;
+      font-size: 1.2rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game">
+  <h1>Tic Tac Toe</h1>
+  <div class="board" id="board"></div>
+  <div class="message" id="message">Player X's turn</div>
+  <button onclick="resetGame()">Restart Game</button>
+</div>
+
+<script>
+  const board = document.getElementById('board');
+  const message = document.getElementById('message');
+  let currentPlayer = 'X';
+  let gameActive = true;
+  const cells = [];
+
+  const winPatterns = [
+    [0,1,2], [3,4,5], [6,7,8], // rows
+    [0,3,6], [1,4,7], [2,5,8], // cols
+    [0,4,8], [2,4,6]           // diagonals
+  ];
+
+  function createBoard() {
+    board.innerHTML = '';
+    cells.length = 0;
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.addEventListener('click', () => handleMove(i));
+      board.appendChild(cell);
+      cells.push(cell);
+    }
+  }
+
+  function handleMove(index) {
+    if (!gameActive || cells[index].textContent !== '') return;
+    cells[index].textContent = currentPlayer;
+    if (checkWin()) {
+      message.textContent = `Player ${currentPlayer} wins!`;
+      gameActive = false;
+    } else if (cells.every(cell => cell.textContent !== '')) {
+      message.textContent = "It's a draw!";
+      gameActive = false;
+    } else {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      message.textContent = `Player ${currentPlayer}'s turn`;
+    }
+  }
+
+  function checkWin() {
+    return winPatterns.some(pattern => {
+      const [a, b, c] = pattern;
+      return (
+        cells[a].textContent === currentPlayer &&
+        cells[b].textContent === currentPlayer &&
+        cells[c].textContent === currentPlayer
+      );
+    });
+  }
+
+  function resetGame() {
+    currentPlayer = 'X';
+    gameActive = true;
+    message.textContent = "Player X's turn";
+    createBoard();
+  }
+
+  // Initialize the game
+  createBoard();
+</script>
+
+</body>
+</html>
